@@ -3,6 +3,7 @@ import { authOptions } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { UserForm } from "@/components/users/UserForm";
 import { prisma } from "@/lib/prisma";
+import { Role } from "@prisma/client";
 import { parsePagination } from "@/lib/helpers";
 import Link from "next/link";
 
@@ -37,7 +38,9 @@ export default async function UsersPage({ searchParams }: UsersPageProps) {
 
   const q = searchParams?.q?.trim() || "";
   const roleFilter =
-    searchParams?.role === "ADMIN" || searchParams?.role === "USER" ? searchParams.role : "";
+    searchParams?.role === "ADMIN" || searchParams?.role === "USER"
+      ? (searchParams.role as Role)
+      : undefined;
 
   const { page: rawPage, pageSize } = parsePagination({
     page: searchParams?.page,
@@ -76,7 +79,7 @@ export default async function UsersPage({ searchParams }: UsersPageProps) {
 
   const baseQuery = {
     q: q || undefined,
-    role: roleFilter || undefined,
+    role: roleFilter,
     pageSize: String(pageSize)
   };
 
